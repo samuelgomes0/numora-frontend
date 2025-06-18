@@ -9,8 +9,6 @@ const emailValidationSchema = z.object({
 export async function processWishlistSubmission(formData: FormData) {
   const rawEmail = formData.get("email");
 
-  console.log("Raw email received:", rawEmail);
-
   const result = emailValidationSchema.safeParse({ email: rawEmail });
 
   if (!result.success) {

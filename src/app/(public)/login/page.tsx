@@ -1,8 +1,10 @@
-import LoginForm from "./components/loginForm";
+import LoginForm from "./components/LoginForm";
+import BackToButton from "./components/ReturnButton";
 
 function LoginPage() {
   return (
-    <div className="flex justify-center items-center w-full h-full">
+    <div className="flex h-full w-full items-center justify-center">
+      <BackToButton />
       <LoginForm />
     </div>
   );

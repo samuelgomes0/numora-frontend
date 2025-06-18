@@ -10,7 +10,7 @@ const REDIRECT_WHEN_NOT_AUTHENTICATED_ROUTE = "/login";
 export function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
   const publicRoute = publicRoutes.find((route) => route.path === path);
-  const authToken = request.cookies.get("numora.token");
+  const authToken = request.cookies.get("numora.accessToken")?.value;
 
   if (!authToken && publicRoute) {
     return NextResponse.next();

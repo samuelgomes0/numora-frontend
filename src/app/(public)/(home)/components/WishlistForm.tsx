@@ -29,9 +29,9 @@ function WishlistForm() {
   };
 
   return (
-    <form className="relative w-full mt-4" onSubmit={handleSubmit}>
+    <form className="relative mt-4 w-full" onSubmit={handleSubmit}>
       <Input
-        className="px-4 h-14 backdrop-blur-sm"
+        className="h-14 px-4 backdrop-blur-sm"
         placeholder="Insira seu melhor email"
         type="email"
         name="email"
@@ -39,11 +39,11 @@ function WishlistForm() {
       />
       <Button
         type="submit"
-        className="absolute top-1.5 h-11 right-2"
+        className="absolute top-1.5 right-2 h-11"
         disabled={isPending}
       >
         {isPending ? (
-          <Spinner className="w-4 h-4" />
+          <Spinner className="h-4 w-4" />
         ) : (
           <>
             {"Entrar na lista de espera"}

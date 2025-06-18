@@ -11,7 +11,7 @@ interface SummaryCardProps {
 function SummaryCard({ icon: Icon, title, content }: SummaryCardProps) {
   return (
     <Card className="flex-1">
-      <CardHeader className="flex flex-row items-center gap-">
+      <CardHeader className="flex flex-row items-center gap-2">
         <Icon className="h-6 w-6" />
         <CardTitle>{title}</CardTitle>
       </CardHeader>
