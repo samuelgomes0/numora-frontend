@@ -6,9 +6,7 @@ interface ParagraphProps {
 }
 
 function Paragraph({ text, className }: ParagraphProps) {
-  return (
-    <p className={cn("text-lg text-muted-foreground", className)}>{text}</p>
-  );
+  return <p className={cn("text-muted-foreground", className)}>{text}</p>;
 }
 
 export default Paragraph;

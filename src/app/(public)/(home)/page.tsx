@@ -4,7 +4,13 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import WishlistForm from "./components/WishlistForm";
 
-function Home() {
+async function Home() {
+  const res = await fetch("http://localhost:3000/api/users", {
+    method: "GET",
+  });
+  const users = await res.json();
+  const userCount = users.length;
+
   return (
     <div className="mx-auto flex h-screen w-full max-w-xl flex-col items-center justify-center gap-6 p-4 text-center">
       <Button variant={"outline"} className="absolute top-4 md:right-4">
@@ -19,6 +25,9 @@ function Home() {
         sofisticação."
       />
       <WishlistForm />
+      <span className="text-center text-sm">
+        {`${userCount}`} pessoas já estão à espera — junte-se a elas!
+      </span>
     </div>
   );
 }
