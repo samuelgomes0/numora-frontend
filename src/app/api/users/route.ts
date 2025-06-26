@@ -1,8 +1,9 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+import { NextResponse } from "next/server";
 
-export async function GET(request: Request) {
-  const url = `${API_URL}/users`;
-  const response = await fetch(url, {
+const URL = `${process.env.NEXT_PUBLIC_API_URL}/users`;
+
+export async function GET() {
+  const response = await fetch(URL, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -14,11 +15,5 @@ export async function GET(request: Request) {
   }
 
   const users = await response.json();
-
-  return new Response(JSON.stringify(users), {
-    status: 200,
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
+  return NextResponse.json(users);
 }

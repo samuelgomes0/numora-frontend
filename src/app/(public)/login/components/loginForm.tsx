@@ -12,10 +12,11 @@ import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import FormError from "../../signup/components/FormError";
 
 const loginFormSchema = z.object({
-  email: z.string().email("Invalid email address").min(1, "Email is required"),
-  password: z.string().min(1, "Password is required"),
+  email: z.string().email("Email inválido").min(1, "Email é obrigatório"),
+  password: z.string().min(1, "Senha é obrigatória"),
 });
 
 function LoginForm() {
@@ -27,13 +28,14 @@ function LoginForm() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof loginFormSchema>) {
-    console.log("Form submitted with values:", values);
-  }
+  function onSubmit(values: z.infer<typeof loginFormSchema>) {}
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-6">
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="w-full space-y-6 text-left"
+      >
         <FormField
           control={form.control}
           name="email"
@@ -43,6 +45,7 @@ function LoginForm() {
               <FormControl>
                 <Input placeholder="email@exemplo.com" {...field} />
               </FormControl>
+              <FormError message={form.formState.errors.email?.message} />
             </FormItem>
           )}
         />
@@ -59,6 +62,7 @@ function LoginForm() {
                   {...field}
                 />
               </FormControl>
+              <FormError message={form.formState.errors.password?.message} />
             </FormItem>
           )}
         />
