@@ -1,5 +1,4 @@
 import ThemeProvider from "@/components/ThemeProvider";
-import { SidebarProvider } from "@/components/ui/sidebar";
 import type { Metadata } from "next";
 import { Geist_Mono, Inter } from "next/font/google";
 import { Toaster } from "sonner";
@@ -35,7 +34,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <SidebarProvider>{children}</SidebarProvider>
+          {children}
         </ThemeProvider>
         <Toaster richColors />
       </body>

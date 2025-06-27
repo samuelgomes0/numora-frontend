@@ -1,5 +1,6 @@
 "use client";
 
+import Spinner from "@/components/Spinner";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -9,26 +10,43 @@ import {
   FormLabel,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { loginFormValidationSchema } from "@/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
+import { useTransition } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 import FormError from "../../signup/components/FormError";
-
-const loginFormSchema = z.object({
-  email: z.string().email("Email inválido").min(1, "Email é obrigatório"),
-  password: z.string().min(1, "Senha é obrigatória"),
-});
+import handleLogin from "../action";
 
 function LoginForm() {
-  const form = useForm<z.infer<typeof loginFormSchema>>({
-    resolver: zodResolver(loginFormSchema),
+  const [isPending, startTransition] = useTransition();
+  const router = useRouter();
+
+  const form = useForm<z.infer<typeof loginFormValidationSchema>>({
+    resolver: zodResolver(loginFormValidationSchema),
     defaultValues: {
       email: "",
       password: "",
     },
   });
 
-  function onSubmit(values: z.infer<typeof loginFormSchema>) {}
+  function onSubmit(values: z.infer<typeof loginFormValidationSchema>) {
+    const { email, password } = values;
+
+    startTransition(async () => {
+      try {
+        await handleLogin(email, password);
+        toast.success("Login realizado com sucesso!");
+        router.push("/dashboard");
+      } catch {
+        toast.error(
+          "Erro ao realizar login. Revise suas credencias ou tente novamente mais tarde.",
+        );
+      }
+    });
+  }
 
   return (
     <Form {...form}>
@@ -66,8 +84,8 @@ function LoginForm() {
             </FormItem>
           )}
         />
-        <Button type="submit" className="w-full">
-          Entrar
+        <Button type="submit" className="w-full" disabled={isPending}>
+          {isPending ? <Spinner className="h-4 w-4" /> : "Entrar"}
         </Button>
       </form>
     </Form>

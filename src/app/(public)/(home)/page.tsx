@@ -5,7 +5,7 @@ import Link from "next/link";
 import WishlistForm from "./components/WishlistForm";
 
 async function Home() {
-  const res = await fetch("http://localhost:3000/api/users", {
+  const res = await fetch("http://localhost:3333/api/users", {
     method: "GET",
   });
   const users = await res.json();

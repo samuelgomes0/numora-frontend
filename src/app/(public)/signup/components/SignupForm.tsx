@@ -10,26 +10,22 @@ import {
   FormLabel,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { signupFormValidationSchema } from "@/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
-import handleSignup from "./action";
+import handleSignup from "../action";
 import FormError from "./FormError";
-
-const signupFormSchema = z.object({
-  name: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
-  email: z.string().email("Endereço de email inválido"),
-  password: z.string().min(6, "Senha deve ter pelo menos 6 caracteres"),
-});
 
 function SignupForm() {
   const [isPending, startTransition] = useTransition();
+  const router = useRouter();
 
-  const form = useForm<z.infer<typeof signupFormSchema>>({
-    resolver: zodResolver(signupFormSchema),
+  const form = useForm<z.infer<typeof signupFormValidationSchema>>({
+    resolver: zodResolver(signupFormValidationSchema),
     defaultValues: {
       name: "",
       email: "",
@@ -37,14 +33,16 @@ function SignupForm() {
     },
   });
 
-  const submitSignupForm = (values: z.infer<typeof signupFormSchema>) => {
+  const submitSignupForm = (
+    values: z.infer<typeof signupFormValidationSchema>,
+  ) => {
     const { name, email, password } = values;
 
     startTransition(async () => {
       try {
-        await handleSignup({ name, email, password });
+        await handleSignup(name, email, password);
         toast.success("Conta criada com sucesso!");
-        redirect("/login");
+        router.push("/login");
       } catch (error) {
         console.error("Error during signup:", error);
         toast.error("Erro ao criar conta. Tente novamente.");
