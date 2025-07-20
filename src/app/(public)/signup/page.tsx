@@ -2,8 +2,8 @@ import Paragraph from "@/components/Paragraph";
 import PrimaryTitle from "@/components/PrimaryTitle";
 import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
-import BackToButton from "../login/components/BackToButton";
 import SignupForm from "./components/SignupForm";
+import BackToButton from "../components/BackButton";
 
 function SignupPage() {
   return (

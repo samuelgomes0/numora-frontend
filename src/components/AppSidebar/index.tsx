@@ -1,4 +1,13 @@
-import { Calendar, Home, Inbox, Search, Settings } from "lucide-react";
+import {
+  Calendar,
+  CreditCard,
+  Home,
+  Inbox,
+  PiggyBank,
+  Settings,
+  TrendingUp,
+  Wallet,
+} from "lucide-react";
 
 import {
   Sidebar,
@@ -6,6 +15,7 @@ import {
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
+  SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -14,27 +24,42 @@ import {
 // Menu items.
 const items = [
   {
-    title: "Home",
+    title: "Dashboard",
     url: "#",
     icon: Home,
   },
   {
-    title: "Inbox",
+    title: "Transações",
     url: "#",
     icon: Inbox,
   },
   {
-    title: "Calendar",
+    title: "Receitas",
+    url: "#",
+    icon: TrendingUp,
+  },
+  {
+    title: "Despesas",
+    url: "#",
+    icon: Wallet,
+  },
+  {
+    title: "Economias",
+    url: "#",
+    icon: PiggyBank,
+  },
+  {
+    title: "Cartões",
+    url: "#",
+    icon: CreditCard,
+  },
+  {
+    title: "Relatórios",
     url: "#",
     icon: Calendar,
   },
   {
-    title: "Search",
-    url: "#",
-    icon: Search,
-  },
-  {
-    title: "Settings",
+    title: "Configurações",
     url: "#",
     icon: Settings,
   },
@@ -42,10 +67,13 @@ const items = [
 
 function AppSidebar() {
   return (
-    <Sidebar>
+    <Sidebar collapsible="icon">
+      <SidebarHeader className="flex items-center justify-center">
+        <h1 className="text-2xl font-bold">Finanças</h1>
+      </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Application</SidebarGroupLabel>
+          <SidebarGroupLabel>Aplicação</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => (

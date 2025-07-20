@@ -32,7 +32,9 @@ function LoginForm() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof loginFormValidationSchema>) {
+  function handleLoginSubmit(
+    values: z.infer<typeof loginFormValidationSchema>,
+  ) {
     const { email, password } = values;
 
     startTransition(async () => {
@@ -51,7 +53,7 @@ function LoginForm() {
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit(onSubmit)}
+        onSubmit={form.handleSubmit(handleLoginSubmit)}
         className="w-full space-y-6 text-left"
       >
         <FormField

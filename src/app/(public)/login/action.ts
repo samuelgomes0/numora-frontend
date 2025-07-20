@@ -4,13 +4,14 @@ import { loginFormValidationSchema } from "@/schemas";
 
 async function handleLogin(email: string, password: string) {
   const result = loginFormValidationSchema.safeParse({ email, password });
+
   if (!result.success)
     throw new Error(result.error.errors.map((e) => e.message).join(", "));
 
   const { email: validEmail, password: validPassword } = result.data;
 
   try {
-    const response = await fetch(`api/login`, {
+    const response = await fetch(`/api/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -39,6 +39,7 @@ import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
 import { toast } from "sonner";
 import { z } from "zod";
 
+import { AddTransactionModal } from "@/components/AddTransactionModal/index";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -86,6 +87,7 @@ import {
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { ITransactionCreatePayload } from "@/types/transaction";
 import {
   ChevronDownIcon,
   ChevronLeftIcon,
@@ -97,7 +99,6 @@ import {
   GripVerticalIcon,
   LoaderIcon,
   MoreVerticalIcon,
-  PlusIcon,
   TrendingUpIcon,
 } from "lucide-react";
 
@@ -165,7 +166,7 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
   },
   {
     accessorKey: "header",
-    header: "Header",
+    header: "Descrição",
     cell: ({ row }) => {
       return <TableCellViewer item={row.original} />;
     },
@@ -173,7 +174,7 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
   },
   {
     accessorKey: "type",
-    header: "Section Type",
+    header: "Categoria",
     cell: ({ row }) => (
       <div className="w-32">
         <Badge variant="outline" className="text-muted-foreground px-1.5">
@@ -187,7 +188,7 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
     header: "Status",
     cell: ({ row }) => (
       <Badge variant="outline" className="text-muted-foreground px-1.5">
-        {row.original.status === "Done" ? (
+        {row.original.status === "Pago" ? (
           <CircleCheckBigIcon className="fill-green-500 dark:fill-green-400" />
         ) : (
           <LoaderIcon />
@@ -198,23 +199,23 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
   },
   {
     accessorKey: "target",
-    header: () => <div className="w-full text-right">Target</div>,
+    header: () => <div className="w-full text-right">Valor</div>,
     cell: ({ row }) => (
       <form
         onSubmit={(e) => {
           e.preventDefault();
           toast.promise(new Promise((resolve) => setTimeout(resolve, 1000)), {
-            loading: `Saving ${row.original.header}`,
-            success: "Done",
-            error: "Error",
+            loading: `Salvando ${row.original.header}`,
+            success: "Salvo",
+            error: "Erro",
           });
         }}
       >
         <Label htmlFor={`${row.original.id}-target`} className="sr-only">
-          Target
+          Valor
         </Label>
         <Input
-          className="hover:bg-input/30 focus-visible:bg-background dark:hover:bg-input/30 dark:focus-visible:bg-input/30 h-8 w-16 border-transparent bg-transparent text-right shadow-none focus-visible:border dark:bg-transparent"
+          className="hover:bg-input/30 focus-visible:bg-background dark:hover:bg-input/30 dark:focus-visible:bg-input/30 h-8 w-20 border-transparent bg-transparent text-right shadow-none focus-visible:border dark:bg-transparent"
           defaultValue={row.original.target}
           id={`${row.original.id}-target`}
         />
@@ -223,23 +224,23 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
   },
   {
     accessorKey: "limit",
-    header: () => <div className="w-full text-right">Limit</div>,
+    header: () => <div className="w-full text-right">Orçamento</div>,
     cell: ({ row }) => (
       <form
         onSubmit={(e) => {
           e.preventDefault();
           toast.promise(new Promise((resolve) => setTimeout(resolve, 1000)), {
-            loading: `Saving ${row.original.header}`,
-            success: "Done",
-            error: "Error",
+            loading: `Salvando ${row.original.header}`,
+            success: "Salvo",
+            error: "Erro",
           });
         }}
       >
         <Label htmlFor={`${row.original.id}-limit`} className="sr-only">
-          Limit
+          Orçamento
         </Label>
         <Input
-          className="hover:bg-input/30 focus-visible:bg-background dark:hover:bg-input/30 dark:focus-visible:bg-input/30 h-8 w-16 border-transparent bg-transparent text-right shadow-none focus-visible:border dark:bg-transparent"
+          className="hover:bg-input/30 focus-visible:bg-background dark:hover:bg-input/30 dark:focus-visible:bg-input/30 h-8 w-20 border-transparent bg-transparent text-right shadow-none focus-visible:border dark:bg-transparent"
           defaultValue={row.original.limit}
           id={`${row.original.id}-limit`}
         />
@@ -248,37 +249,14 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
   },
   {
     accessorKey: "reviewer",
-    header: "Reviewer",
-    cell: ({ row }) => {
-      const isAssigned = row.original.reviewer !== "Assign reviewer";
-
-      if (isAssigned) {
-        return row.original.reviewer;
-      }
-
-      return (
-        <>
-          <Label htmlFor={`${row.original.id}-reviewer`} className="sr-only">
-            Reviewer
-          </Label>
-          <Select>
-            <SelectTrigger
-              className="w-38 **:data-[slot=select-value]:block **:data-[slot=select-value]:truncate"
-              size="sm"
-              id={`${row.original.id}-reviewer`}
-            >
-              <SelectValue placeholder="Assign reviewer" />
-            </SelectTrigger>
-            <SelectContent align="end">
-              <SelectItem value="Eddie Lake">Eddie Lake</SelectItem>
-              <SelectItem value="Jamik Tashpulatov">
-                Jamik Tashpulatov
-              </SelectItem>
-            </SelectContent>
-          </Select>
-        </>
-      );
-    },
+    header: "Forma de Pagamento",
+    cell: ({ row }) => (
+      <div className="w-32">
+        <Badge variant="outline" className="text-muted-foreground px-1.5">
+          {row.original.reviewer}
+        </Badge>
+      </div>
+    ),
   },
   {
     id: "actions",
@@ -295,11 +273,11 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-32">
-          <DropdownMenuItem>Edit</DropdownMenuItem>
-          <DropdownMenuItem>Make a copy</DropdownMenuItem>
-          <DropdownMenuItem>Favorite</DropdownMenuItem>
+          <DropdownMenuItem>Editar</DropdownMenuItem>
+          <DropdownMenuItem>Duplicar</DropdownMenuItem>
+          <DropdownMenuItem>Favoritar</DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem variant="destructive">Delete</DropdownMenuItem>
+          <DropdownMenuItem variant="destructive">Excluir</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     ),
@@ -331,7 +309,13 @@ function DraggableRow({ row }: { row: Row<z.infer<typeof schema>> }) {
   );
 }
 
-function DataTable({ data: initialData }: { data: z.infer<typeof schema>[] }) {
+function DataTable({
+  data: initialData,
+  onTransactionCreate,
+}: {
+  data: z.infer<typeof schema>[];
+  onTransactionCreate?: (data: ITransactionCreatePayload) => void;
+}) {
   const [data, setData] = React.useState(() => initialData);
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
@@ -392,6 +376,22 @@ function DataTable({ data: initialData }: { data: z.infer<typeof schema>[] }) {
     }
   }
 
+  function handleTransactionCreate(payload: ITransactionCreatePayload) {
+    // Aqui você pode implementar a lógica para salvar a transação
+    console.log("Nova transação:", payload);
+
+    // Por enquanto, vamos apenas mostrar um toast de sucesso
+    toast.success("Transação adicionada com sucesso!");
+
+    // Chamar a função de callback se fornecida
+    if (onTransactionCreate) {
+      onTransactionCreate(payload);
+    }
+
+    // Aqui você pode adicionar a nova transação à tabela
+    // setData(prevData => [...prevData, newTransaction]);
+  }
+
   return (
     <Tabs
       defaultValue="outline"
@@ -417,22 +417,22 @@ function DataTable({ data: initialData }: { data: z.infer<typeof schema>[] }) {
           </SelectContent>
         </Select>
         <TabsList className="**:data-[slot=badge]:bg-muted-foreground/30 hidden **:data-[slot=badge]:size-5 **:data-[slot=badge]:rounded-full **:data-[slot=badge]:px-1 @4xl/main:flex">
-          <TabsTrigger value="outline">Outline</TabsTrigger>
+          <TabsTrigger value="outline">Transações</TabsTrigger>
           <TabsTrigger value="past-performance">
-            Past Performance <Badge variant="secondary">3</Badge>
+            Histórico <Badge variant="secondary">3</Badge>
           </TabsTrigger>
           <TabsTrigger value="key-personnel">
-            Key Personnel <Badge variant="secondary">2</Badge>
+            Categorias <Badge variant="secondary">2</Badge>
           </TabsTrigger>
-          <TabsTrigger value="focus-documents">Focus Documents</TabsTrigger>
+          <TabsTrigger value="focus-documents">Relatórios</TabsTrigger>
         </TabsList>
         <div className="flex items-center gap-2">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="sm">
                 <Columns2Icon />
-                <span className="hidden lg:inline">Customize Columns</span>
-                <span className="lg:hidden">Columns</span>
+                <span className="hidden lg:inline">Personalizar Colunas</span>
+                <span className="lg:hidden">Colunas</span>
                 <ChevronDownIcon />
               </Button>
             </DropdownMenuTrigger>
@@ -460,10 +460,7 @@ function DataTable({ data: initialData }: { data: z.infer<typeof schema>[] }) {
                 })}
             </DropdownMenuContent>
           </DropdownMenu>
-          <Button variant="outline" size="sm">
-            <PlusIcon />
-            <span className="hidden lg:inline">Add Section</span>
-          </Button>
+          <AddTransactionModal onTransactionCreate={handleTransactionCreate} />
         </div>
       </div>
       <TabsContent
@@ -513,7 +510,7 @@ function DataTable({ data: initialData }: { data: z.infer<typeof schema>[] }) {
                       colSpan={columns.length}
                       className="h-24 text-center"
                     >
-                      No results.
+                      Nenhum resultado encontrado.
                     </TableCell>
                   </TableRow>
                 )}
@@ -523,13 +520,13 @@ function DataTable({ data: initialData }: { data: z.infer<typeof schema>[] }) {
         </div>
         <div className="flex items-center justify-between px-4">
           <div className="text-muted-foreground hidden flex-1 text-sm lg:flex">
-            {table.getFilteredSelectedRowModel().rows.length} of{" "}
-            {table.getFilteredRowModel().rows.length} row(s) selected.
+            {table.getFilteredSelectedRowModel().rows.length} de{" "}
+            {table.getFilteredRowModel().rows.length} linha(s) selecionada(s).
           </div>
           <div className="flex w-full items-center gap-8 lg:w-fit">
             <div className="hidden items-center gap-2 lg:flex">
               <Label htmlFor="rows-per-page" className="text-sm font-medium">
-                Rows per page
+                Linhas por página
               </Label>
               <Select
                 value={`${table.getState().pagination.pageSize}`}
@@ -552,7 +549,7 @@ function DataTable({ data: initialData }: { data: z.infer<typeof schema>[] }) {
               </Select>
             </div>
             <div className="flex w-fit items-center justify-center text-sm font-medium">
-              Page {table.getState().pagination.pageIndex + 1} of{" "}
+              Página {table.getState().pagination.pageIndex + 1} de{" "}
               {table.getPageCount()}
             </div>
             <div className="ml-auto flex items-center gap-2 lg:ml-0">
@@ -562,7 +559,7 @@ function DataTable({ data: initialData }: { data: z.infer<typeof schema>[] }) {
                 onClick={() => table.setPageIndex(0)}
                 disabled={!table.getCanPreviousPage()}
               >
-                <span className="sr-only">Go to first page</span>
+                <span className="sr-only">Ir para primeira página</span>
                 <ChevronsLeftIcon />
               </Button>
               <Button
@@ -572,7 +569,7 @@ function DataTable({ data: initialData }: { data: z.infer<typeof schema>[] }) {
                 onClick={() => table.previousPage()}
                 disabled={!table.getCanPreviousPage()}
               >
-                <span className="sr-only">Go to previous page</span>
+                <span className="sr-only">Ir para página anterior</span>
                 <ChevronLeftIcon />
               </Button>
               <Button
@@ -582,7 +579,7 @@ function DataTable({ data: initialData }: { data: z.infer<typeof schema>[] }) {
                 onClick={() => table.nextPage()}
                 disabled={!table.getCanNextPage()}
               >
-                <span className="sr-only">Go to next page</span>
+                <span className="sr-only">Ir para próxima página</span>
                 <ChevronRightIcon />
               </Button>
               <Button
@@ -592,7 +589,7 @@ function DataTable({ data: initialData }: { data: z.infer<typeof schema>[] }) {
                 onClick={() => table.setPageIndex(table.getPageCount() - 1)}
                 disabled={!table.getCanNextPage()}
               >
-                <span className="sr-only">Go to last page</span>
+                <span className="sr-only">Ir para última página</span>
                 <ChevronsRightIcon />
               </Button>
             </div>
@@ -652,7 +649,7 @@ function TableCellViewer({ item }: { item: z.infer<typeof schema> }) {
         <DrawerHeader className="gap-1">
           <DrawerTitle>{item.header}</DrawerTitle>
           <DrawerDescription>
-            Showing total visitors for the last 6 months
+            Detalhes da transação financeira
           </DrawerDescription>
         </DrawerHeader>
         <div className="flex flex-col gap-4 overflow-y-auto px-4 text-sm">
@@ -701,13 +698,13 @@ function TableCellViewer({ item }: { item: z.infer<typeof schema> }) {
               <Separator />
               <div className="grid gap-2">
                 <div className="flex gap-2 leading-none font-medium">
-                  Trending up by 5.2% this month{" "}
+                  Crescimento de 5.2% este mês{" "}
                   <TrendingUpIcon className="size-4" />
                 </div>
                 <div className="text-muted-foreground">
-                  Showing total visitors for the last 6 months. This is just
-                  some random text to test the layout. It spans multiple lines
-                  and should wrap around.
+                  Histórico de transações dos últimos 6 meses. Este é um exemplo
+                  de texto para testar o layout. Ele pode ocupar múltiplas
+                  linhas e deve se ajustar adequadamente.
                 </div>
               </div>
               <Separator />
@@ -715,33 +712,30 @@ function TableCellViewer({ item }: { item: z.infer<typeof schema> }) {
           )}
           <form className="flex flex-col gap-4">
             <div className="flex flex-col gap-3">
-              <Label htmlFor="header">Header</Label>
+              <Label htmlFor="header">Descrição</Label>
               <Input id="header" defaultValue={item.header} />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="flex flex-col gap-3">
-                <Label htmlFor="type">Type</Label>
+                <Label htmlFor="type">Categoria</Label>
                 <Select defaultValue={item.type}>
                   <SelectTrigger id="type" className="w-full">
-                    <SelectValue placeholder="Select a type" />
+                    <SelectValue placeholder="Selecione uma categoria" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Table of Contents">
-                      Table of Contents
+                    <SelectItem value="Alimentação">Alimentação</SelectItem>
+                    <SelectItem value="Transporte">Transporte</SelectItem>
+                    <SelectItem value="Moradia">Moradia</SelectItem>
+                    <SelectItem value="Saúde">Saúde</SelectItem>
+                    <SelectItem value="Entretenimento">
+                      Entretenimento
                     </SelectItem>
-                    <SelectItem value="Executive Summary">
-                      Executive Summary
+                    <SelectItem value="Vestuário">Vestuário</SelectItem>
+                    <SelectItem value="Educação">Educação</SelectItem>
+                    <SelectItem value="Cuidados Pessoais">
+                      Cuidados Pessoais
                     </SelectItem>
-                    <SelectItem value="Technical Approach">
-                      Technical Approach
-                    </SelectItem>
-                    <SelectItem value="Design">Design</SelectItem>
-                    <SelectItem value="Capabilities">Capabilities</SelectItem>
-                    <SelectItem value="Focus Documents">
-                      Focus Documents
-                    </SelectItem>
-                    <SelectItem value="Narrative">Narrative</SelectItem>
-                    <SelectItem value="Cover Page">Cover Page</SelectItem>
+                    <SelectItem value="Comunicação">Comunicação</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -749,47 +743,55 @@ function TableCellViewer({ item }: { item: z.infer<typeof schema> }) {
                 <Label htmlFor="status">Status</Label>
                 <Select defaultValue={item.status}>
                   <SelectTrigger id="status" className="w-full">
-                    <SelectValue placeholder="Select a status" />
+                    <SelectValue placeholder="Selecione um status" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Done">Done</SelectItem>
-                    <SelectItem value="In Progress">In Progress</SelectItem>
-                    <SelectItem value="Not Started">Not Started</SelectItem>
+                    <SelectItem value="Pago">Pago</SelectItem>
+                    <SelectItem value="Pendente">Pendente</SelectItem>
+                    <SelectItem value="Cancelado">Cancelado</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="flex flex-col gap-3">
-                <Label htmlFor="target">Target</Label>
+                <Label htmlFor="target">Valor</Label>
                 <Input id="target" defaultValue={item.target} />
               </div>
               <div className="flex flex-col gap-3">
-                <Label htmlFor="limit">Limit</Label>
+                <Label htmlFor="limit">Orçamento</Label>
                 <Input id="limit" defaultValue={item.limit} />
               </div>
             </div>
             <div className="flex flex-col gap-3">
-              <Label htmlFor="reviewer">Reviewer</Label>
+              <Label htmlFor="reviewer">Forma de Pagamento</Label>
               <Select defaultValue={item.reviewer}>
                 <SelectTrigger id="reviewer" className="w-full">
-                  <SelectValue placeholder="Select a reviewer" />
+                  <SelectValue placeholder="Selecione forma de pagamento" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Eddie Lake">Eddie Lake</SelectItem>
-                  <SelectItem value="Jamik Tashpulatov">
-                    Jamik Tashpulatov
+                  <SelectItem value="Cartão de Crédito">
+                    Cartão de Crédito
                   </SelectItem>
-                  <SelectItem value="Emily Whalen">Emily Whalen</SelectItem>
+                  <SelectItem value="Cartão de Débito">
+                    Cartão de Débito
+                  </SelectItem>
+                  <SelectItem value="Dinheiro">Dinheiro</SelectItem>
+                  <SelectItem value="Transferência">Transferência</SelectItem>
+                  <SelectItem value="Boleto">Boleto</SelectItem>
+                  <SelectItem value="PIX">PIX</SelectItem>
+                  <SelectItem value="Débito Automático">
+                    Débito Automático
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </form>
         </div>
         <DrawerFooter>
-          <Button>Submit</Button>
+          <Button>Salvar</Button>
           <DrawerClose asChild>
-            <Button variant="outline">Done</Button>
+            <Button variant="outline">Concluído</Button>
           </DrawerClose>
         </DrawerFooter>
       </DrawerContent>

@@ -1,4 +1,4 @@
-import HomeFooter from "./components/Footer";
+import HomeFooter from "../../components/Footer";
 
 function PublicLayout({ children }: { children: React.ReactNode }) {
   return (

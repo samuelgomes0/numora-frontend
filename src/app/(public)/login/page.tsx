@@ -1,8 +1,6 @@
 import Paragraph from "@/components/Paragraph";
 import PrimaryTitle from "@/components/PrimaryTitle";
-import { Separator } from "@/components/ui/separator";
-import Link from "next/link";
-import BackToButton from "./components/BackToButton";
+import BackToButton from "../components/BackButton";
 import LoginForm from "./components/LoginForm";
 
 function LoginPage() {
@@ -18,7 +16,7 @@ function LoginPage() {
           />
         </div>
         <LoginForm />
-        <Separator />
+        {/* <Separator />
         <span className="text-muted-foreground text-sm">
           Não tem uma conta?{" "}
           <Link
@@ -27,7 +25,7 @@ function LoginPage() {
           >
             Crie uma agora
           </Link>
-        </span>
+        </span> */}
       </div>
     </div>
   );
